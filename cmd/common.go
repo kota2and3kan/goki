@@ -28,7 +28,7 @@ const (
 	crdbContainerImage string = "cockroachdb/cockroach" // CockroachDB's image name in the Docker Hub.
 	crdbVersion        string = "v22.2.0"               // CockroachDB's version (Tag of container image).
 	// Related to Goki
-	gokiVersion             string = "v0.0.0"
+	gokiVersion             string = "v0.0.x"
 	gokiResourceName        string = "goki"      // Prefix of each resource (e.g. goki-client, goki-network, goki-volume etc...)
 	gokiSqlIp               string = "127.0.0.1" // IP that the first container will listen for SQL connection.
 	gokiSqlPort             string = "26257"     // Port that the first contarner will listen for SQL connection.
