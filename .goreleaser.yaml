@@ -1,0 +1,17 @@
+project_name: goki
+before:
+  hooks:
+    - go mod tidy
+builds:
+  - goos:
+      - linux
+      - darwin
+    goarch:
+      - amd64
+      - arm64
+archives:
+  - replacements:
+      amd64: x86_64
+changelog:
+  sort: asc
+  abbrev: -1
