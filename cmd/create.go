@@ -153,7 +153,7 @@ func checkDocker() error {
 }
 
 func checkGokiContainer() error {
-	c := exec.Command("docker", "ps", "-aqf", "label="+gokiResourceLabel, "--format", "{{.ID}} : {{.Names}}")
+	c := exec.Command("docker", "ps", "-af", "label="+gokiResourceLabel, "--format", "{{.ID}} : {{.Names}}")
 
 	if output, err := c.CombinedOutput(); err != nil {
 		fmt.Fprintf(os.Stderr, "docker ps commad failed: %v\n", string(output))
@@ -169,7 +169,7 @@ func checkGokiContainer() error {
 }
 
 func checkGokiNetwork() error {
-	c := exec.Command("docker", "network", "ls", "-qf", "label="+gokiResourceLabel, "--format", "{{.ID}} : {{.Name}}")
+	c := exec.Command("docker", "network", "ls", "-f", "label="+gokiResourceLabel, "--format", "{{.ID}} : {{.Name}}")
 
 	if output, err := c.CombinedOutput(); err != nil {
 		fmt.Fprintf(os.Stderr, "docker network ls commad failed: %v\n", string(output))
@@ -184,7 +184,7 @@ func checkGokiNetwork() error {
 }
 
 func checkGokiVolume() error {
-	c := exec.Command("docker", "volume", "ls", "-qf", "label="+gokiResourceLabel, "--format", "{{.Name}}")
+	c := exec.Command("docker", "volume", "ls", "-f", "label="+gokiResourceLabel, "--format", "{{.Name}}")
 
 	if output, err := c.CombinedOutput(); err != nil {
 		fmt.Fprintf(os.Stderr, "docker volume ls command failed: %v\n", string(output))

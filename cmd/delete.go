@@ -91,7 +91,7 @@ func deleteGokiContainers() error {
 	var deadGokiList []string = []string{}
 
 	// Get list of running container that related to Goki.
-	c := exec.Command("docker", "ps", "-qf", "label="+gokiResourceLabel, "--format", "{{.Names}}")
+	c := exec.Command("docker", "ps", "-f", "label="+gokiResourceLabel, "--format", "{{.Names}}")
 
 	if output, err := c.CombinedOutput(); err != nil {
 		fmt.Fprintf(os.Stderr, "docker ps command failed: %v\n", string(output))
@@ -113,7 +113,7 @@ func deleteGokiContainers() error {
 	}
 
 	// Get list of stopped containers to remove them.
-	c = exec.Command("docker", "ps", "-aqf", "label="+gokiResourceLabel, "--format", "{{.Names}}")
+	c = exec.Command("docker", "ps", "-af", "label="+gokiResourceLabel, "--format", "{{.Names}}")
 
 	if output, err := c.CombinedOutput(); err != nil {
 		fmt.Fprintf(os.Stderr, "docker ps command failed: %v\n", string(output))
@@ -150,7 +150,7 @@ func deleteGokiNetwork() error {
 	var gokiNetworkName string
 
 	// Get goki network name.
-	c := exec.Command("docker", "network", "ls", "-qf", "label="+gokiResourceLabel, "--format", "{{.Name}}")
+	c := exec.Command("docker", "network", "ls", "-f", "label="+gokiResourceLabel, "--format", "{{.Name}}")
 
 	if output, err := c.CombinedOutput(); err != nil {
 		fmt.Fprintf(os.Stderr, "docker network ls command failed: %v\n", string(output))
@@ -184,7 +184,7 @@ func deleteGokiVolume() error {
 	var gokiVolumeList []string = []string{}
 
 	// Get list of goki volume.
-	c := exec.Command("docker", "volume", "ls", "-qf", "label="+gokiResourceLabel, "--format", "{{.Name}}")
+	c := exec.Command("docker", "volume", "ls", "-f", "label="+gokiResourceLabel, "--format", "{{.Name}}")
 
 	if output, err := c.CombinedOutput(); err != nil {
 		fmt.Fprintf(os.Stderr, "docker volume ls command failed: %v\n", string(output))
