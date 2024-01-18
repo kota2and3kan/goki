@@ -47,7 +47,7 @@ func gokiIsDead(id int) (bool, error) {
 	var deadGokiList []string = []string{}
 
 	// Get list of running container that related to Goki.
-	c := exec.Command("docker", "ps", "-qf", "label="+gokiResourceLabel, "--format", "{{.Names}}")
+	c := exec.Command("docker", "ps", "-f", "label="+gokiResourceLabel, "--format", "{{.Names}}")
 
 	if output, err := c.CombinedOutput(); err != nil {
 		fmt.Fprintf(os.Stderr, "docker ps command failed: %v\n", string(output))
@@ -63,7 +63,7 @@ func gokiIsDead(id int) (bool, error) {
 	}
 
 	// Get list of stopped containers that related to Goki.
-	c = exec.Command("docker", "ps", "-aqf", "label="+gokiResourceLabel, "--format", "{{.Names}}")
+	c = exec.Command("docker", "ps", "-af", "label="+gokiResourceLabel, "--format", "{{.Names}}")
 
 	if output, err := c.CombinedOutput(); err != nil {
 		fmt.Fprintf(os.Stderr, "docker ps command failed: %v\n", string(output))

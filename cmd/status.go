@@ -52,7 +52,7 @@ func getNumberOfContainers() (int, error) {
 	var gokiList []string = []string{}
 
 	// Get list of stopped containers to remove them.
-	c := exec.Command("docker", "ps", "-aqf", "label="+gokiResourceLabel, "--format", "{{.Names}}")
+	c := exec.Command("docker", "ps", "-af", "label="+gokiResourceLabel, "--format", "{{.Names}}")
 
 	if output, err := c.CombinedOutput(); err != nil {
 		fmt.Fprintf(os.Stderr, "docker ps command failed: %v\n", string(output))
