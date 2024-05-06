@@ -28,13 +28,16 @@ import (
 )
 
 var (
-	gokiVolumeAlreadyExist bool // If Goki's docker volume already exist, re-use it and skip cluster initializing.
+	gokiVolumeAlreadyExist bool     // If Goki's docker volume already exist, re-use it and skip cluster initializing.
+	gokiRegionId           int  = 0 // The ID of a region that a node will be deployed. Goki uses region-1, region-2, or region-3.
+	gokiZoneId             int  = 0 // The ID of a zone that a node will be deployed. Goki uses zone-1, zone-2, or zone-3.
 )
 
 // Flag value of create command.
 var createCmdFlags struct {
 	node        int    // Number of node (container).
 	crdbVersion string // Version of CockroachDB that specified to tag of container image.
+	locality    bool   // Whether set --locality flag or not.
 }
 
 // createCmd represents the create command
@@ -77,7 +80,10 @@ var createCmd = &cobra.Command{
 		}
 
 		// Create CockroachDB Local Cluster.
-		fmt.Println("INFO: The number of cockroaches in the cluster is", createCmdFlags.node)
+		fmt.Println("INFO: The number of cockroaches in the cluster is", createCmdFlags.node, ".")
+		if createCmdFlags.locality {
+			fmt.Println("INFO: The --set-locality is true. Set region and zone information in each node.")
+		}
 		fmt.Println("INFO: *** Start Creating CockroachDB Local Cluster ***")
 
 		// Create Docker Network that each cockroach and client will join.
@@ -377,6 +383,11 @@ func createFirstGoki() error {
 	// Create first node.
 	fmt.Println("INFO: Creating First node start.")
 
+	if createCmdFlags.locality {
+		gokiRegionId = 1
+		gokiZoneId = 1
+	}
+
 	c := exec.Command("docker", "run", "-d",
 		"--name="+gokiResourceName+"-1",
 		"--hostname="+gokiResourceName+"-1",
@@ -390,6 +401,7 @@ func createFirstGoki() error {
 		"start",
 		"--certs-dir=certs/node-certs/"+gokiResourceName+"-1",
 		"--join="+gokiResourceName+"-1,"+gokiResourceName+"-2,"+gokiResourceName+"-3",
+		"--locality=region=region-"+strconv.Itoa(gokiRegionId)+",zone=zone-"+strconv.Itoa(gokiZoneId),
 	)
 
 	if output, err := c.CombinedOutput(); err != nil {
@@ -520,6 +532,23 @@ func createGokiCluster() error {
 	// Run the second and later node.
 	for i := 2; i <= createCmdFlags.node; i++ {
 
+		if createCmdFlags.locality {
+			switch i {
+			case 1, 2, 3:
+				gokiRegionId = 1
+			case 4, 5, 6:
+				gokiRegionId = 2
+			case 7, 8, 9:
+				gokiRegionId = 3
+			}
+
+			if i%3 == 0 {
+				gokiZoneId = 3
+			} else {
+				gokiZoneId = i % 3
+			}
+		}
+
 		c := exec.Command("docker", "run", "-d",
 			"--name="+gokiResourceName+"-"+strconv.Itoa(i),
 			"--hostname="+gokiResourceName+"-"+strconv.Itoa(i),
@@ -531,6 +560,7 @@ func createGokiCluster() error {
 			"start",
 			"--certs-dir=certs/node-certs/"+gokiResourceName+"-"+strconv.Itoa(i),
 			"--join="+gokiResourceName+"-1,"+gokiResourceName+"-2,"+gokiResourceName+"-3",
+			"--locality=region=region-"+strconv.Itoa(gokiRegionId)+",zone=zone-"+strconv.Itoa(gokiZoneId),
 		)
 
 		if output, err := c.CombinedOutput(); err != nil {
@@ -657,4 +687,5 @@ func init() {
 	// Flags of goki create.
 	createCmd.Flags().IntVarP(&createCmdFlags.node, "node", "n", 3, "The number of cockroaches.")
 	createCmd.Flags().StringVar(&createCmdFlags.crdbVersion, "crdb-version", crdbVersion, "Version of CockroachDB (Tag of container image).")
+	createCmd.Flags().BoolVarP(&createCmdFlags.locality, "set-locality", "l", false, "Set --locality flag (region and zone value) to all nodes.")
 }
