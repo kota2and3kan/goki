@@ -26,7 +26,7 @@ import (
 const (
 	// Related to CockroachDB
 	crdbContainerImage string = "cockroachdb/cockroach" // CockroachDB's image name in the Docker Hub.
-	crdbVersion        string = "v22.2.0"               // CockroachDB's version (Tag of container image).
+	crdbVersion        string = "v23.2.4"               // CockroachDB's version (Tag of container image).
 	// Related to Goki
 	gokiVersion             string = "Development version (latest main branch)"
 	gokiResourceName        string = "goki"      // Prefix of each resource (e.g. goki-client, goki-network, goki-volume etc...)
